@@ -45,12 +45,17 @@ class Item(models.Model):
 
             img = img.resize((new_width, new_height), Image.LANCZOS)
 
-            # Crop the center of the image to the target size
-            left = (new_width - target_width) / 2
-            top = (new_height - target_height) / 2
-            right = (new_width + target_width) / 2
-            bottom = (new_height + target_height) / 2
+            # Create a new blank image with a white background
+            new_img = Image.new('RGB', (target_width, target_height), (255, 255, 255))
 
-            img = img.crop((left, top, right, bottom))
+            # Calculate the position to paste the resized image
+            left = (target_width - new_width) // 2
+            top = (target_height - new_height) // 2
+            right = left + new_width
+            bottom = top + new_height
 
-            img.save(self.image.path)
+            # Paste the resized image onto the new blank image
+            new_img.paste(img, (left, top, right, bottom))
+
+            # Save the new image with white background
+            new_img.save(self.image.path)
